@@ -1,0 +1,6 @@
+bin/
+obj/
+.vs/
+_patch_backups/
+*.patch
+*.zip

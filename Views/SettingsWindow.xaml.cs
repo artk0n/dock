@@ -48,6 +48,12 @@ namespace DockTop
             _svc.Current.NowPlaying = ChkNow.IsChecked==true;
             _svc.Current.NetworkPing = ChkPing.IsChecked==true;
             _svc.Save();
+            using DockTop.Services;
+using System.Diagnostics;
+
+var exe = Process.GetCurrentProcess().MainModule?.FileName ?? "";
+AutoStartService.SetAutoStart(_svc.Current.AutoStartWithWindows, exe);
+
             Close();
         }
         private void Close_Click(object sender, RoutedEventArgs e) => Close();
