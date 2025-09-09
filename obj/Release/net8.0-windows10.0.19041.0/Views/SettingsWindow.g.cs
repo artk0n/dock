@@ -8,7 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using DockTop.Controls;
 using System;
 using System.Diagnostics;
 using System.Windows;

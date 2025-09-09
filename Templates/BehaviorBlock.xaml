@@ -1,0 +1,28 @@
+      <TextBlock Text="Behavior" FontWeight="Bold" Margin="0,12,0,8"/>
+      <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+        <TextBlock Text="Dock Edge:" Width="120"/>
+        <ComboBox x:Name="CmbEdge" Width="200">
+          <ComboBoxItem Content="Top"/><ComboBoxItem Content="Bottom"/>
+          <ComboBoxItem Content="Left"/><ComboBoxItem Content="Right"/>
+        </ComboBox>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+        <TextBlock Text="Thickness (H):" Width="120"/>
+        <Slider x:Name="SldThH" Minimum="44" Maximum="160" Width="200"/>
+        <TextBlock Text="{Binding ElementName=SldThH, Path=Value, StringFormat=F0}" Margin="6,0,0,0"/>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+        <TextBlock Text="Thickness (V):" Width="120"/>
+        <Slider x:Name="SldThV" Minimum="44" Maximum="220" Width="200"/>
+        <TextBlock Text="{Binding ElementName=SldThV, Path=Value, StringFormat=F0}" Margin="6,0,0,0"/>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+        <TextBlock Text="Reveal Anim (ms):" Width="120"/>
+        <TextBox x:Name="TxtAnimIn" Width="80"/>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+        <TextBlock Text="Hide Anim (ms):" Width="120"/>
+        <TextBox x:Name="TxtAnimOut" Width="80"/>
+      </StackPanel>
+      <CheckBox x:Name="ChkClickThrough" Content="Click-through when hidden" />
+      <CheckBox x:Name="ChkAutoStart" Content="Auto-start with Windows" />

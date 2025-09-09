@@ -28,7 +28,7 @@
       </Border.Effect>
 
       <DockPanel LastChildFill="True" Margin="6">
-        <!-- Top/bottom strip for page dots -->
+        <!-- Page dots bar -->
         <StackPanel x:Name="PART_PageDots"
                     DockPanel.Dock="Bottom"
                     Orientation="Horizontal"
@@ -63,7 +63,7 @@
                   ToolTip="Close"/>
         </StackPanel>
 
-        <!-- Center: items -->
+        <!-- Center: tiles -->
         <ListBox x:Name="TileList"
                  AllowDrop="True"
                  SelectionMode="Single"
@@ -88,7 +88,6 @@
                       Background="{x:Null}"
                       BorderThickness="0">
                 <StackPanel>
-                  <!-- icon placeholder: bind when you wire the converter -->
                   <Image Width="24" Height="24" Margin="0,2,0,2"/>
                   <TextBlock Text="{Binding Title}"
                              HorizontalAlignment="Center"

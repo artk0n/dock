@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Interop;
+using System.Windows.Media.Animation;
 using DockTop.Utils;
 
 namespace DockTop
@@ -23,56 +23,36 @@ namespace DockTop
         public MainWindow()
         {
             InitializeComponent();
-
-            // mouse wheel paging
-            this.PreviewMouseWheel += OnMouseWheelScroll;
-            this.Loaded += OnLoaded;
+            PreviewMouseWheel += OnMouseWheelScroll;
+            Loaded += OnLoaded;
         }
 
-        private void OnLoaded(object? sender, RoutedEventArgs e)
+        private void OnLoaded(object sender, RoutedEventArgs e)
         {
             try { Settings.Current.Profile.ScreenId = MonitorHelper.GetPrimaryId(); } catch {}
-
-            // hotkeys
-            try
-            {
+            try {
                 _hotkeys = new GlobalHotkeys(this);
                 _hkToggleId = _hotkeys.Bind(Settings.Current.HotkeyToggle ?? "Ctrl+Alt+D", ToggleDock);
                 _hkSearchId = _hotkeys.Bind(Settings.Current.HotkeySearch ?? "Ctrl+K", () => BtnSearch_Click(this, new RoutedEventArgs()));
             } catch {}
-
-            // layout and items
             ApplyEdgeLayout();
             BuildItems();
-
-            if (Settings.Current.AutoHide)
-            {
+            if (Settings.Current.AutoHide) {
                 HideDock();
                 _edgeTimer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
                 _edgeTimer.Tick += (_, __) => EdgePeekCheck();
                 _edgeTimer.Start();
-            }
-            else
-            {
+            } else {
                 ShowDock();
             }
         }
 
-        // ===== core behaviour =====
         private void ApplyEdgeLayout()
         {
             var sw = SystemParameters.PrimaryScreenWidth;
             var sh = SystemParameters.PrimaryScreenHeight;
-            if (Settings.Current.DockEdge == "Left" || Settings.Current.DockEdge == "Right")
-            {
-                Width = Math.Max(44, Settings.Current.ThicknessVertical);
-                Height = sh;
-            }
-            else
-            {
-                Width = sw;
-                Height = Math.Max(44, Settings.Current.ThicknessHorizontal);
-            }
+            if (Settings.Current.DockEdge == "Left" || Settings.Current.DockEdge == "Right") { Width = Math.Max(44, Settings.Current.ThicknessVertical); Height = sh; }
+            else { Width = sw; Height = Math.Max(44, Settings.Current.ThicknessHorizontal); }
             ShowDock();
         }
 
@@ -82,19 +62,15 @@ namespace DockTop
             var sw = SystemParameters.PrimaryScreenWidth;
             var sh = SystemParameters.PrimaryScreenHeight;
             GetCursorPos(out var p);
-
-            bool shouldShow = Settings.Current.DockEdge switch
-            {
+            bool shouldShow = Settings.Current.DockEdge switch {
                 "Top" => p.y <= peek,
                 "Bottom" => p.y >= (sh - 1 - peek),
                 "Left" => p.x <= peek,
                 "Right" => p.x >= (sw - 1 - peek),
                 _ => false
             };
-
             if (shouldShow) ShowDock();
-            else
-            {
+            else {
                 var over = p.x >= Left && p.x <= Left + Width && p.y >= Top && p.y <= Top + Height;
                 if (!over) HideDock();
             }
@@ -102,12 +78,8 @@ namespace DockTop
 
         private void AnimateTo(DependencyProperty prop, double to, int ms)
         {
-            var anim = new System.Windows.Media.Animation.DoubleAnimation
-            {
-                To = to,
-                Duration = new Duration(TimeSpan.FromMilliseconds(ms)),
-                EasingFunction = new System.Windows.Media.Animation.CubicEase { EasingMode = System.Windows.Media.Animation.EasingMode.EaseOut }
-            };
+            var anim = new DoubleAnimation { To = to, Duration = new Duration(TimeSpan.FromMilliseconds(ms)),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } };
             BeginAnimation(prop, anim);
         }
 
@@ -142,29 +114,20 @@ namespace DockTop
 
         private void ToggleDock() { if (_hidden) ShowDock(); else HideDock(); }
 
-        // ===== tiles & paging =====
-        void BuildItems()
+        private void BuildItems()
         {
             int per = Settings.Current.TilesPerPage;
-            if (per <= 0)
-            {
-                double w = this.ActualWidth > 0 ? this.ActualWidth : SystemParameters.PrimaryScreenWidth;
-                per = Math.Max(6, (int)Math.Floor((w - 80) / 88.0));
-            }
-
+            if (per <= 0) { double w = this.ActualWidth > 0 ? this.ActualWidth : SystemParameters.PrimaryScreenWidth;
+                per = Math.Max(6, (int)Math.Floor((w - 80) / 88.0)); }
             var all = Items.All.Where(i => !i.Disabled).ToList();
             int total = all.Count;
             int pages = Math.Max(1, (int)Math.Ceiling(total / (double)per));
             _pageIndex = Math.Clamp(_pageIndex, 0, pages - 1);
-
             var pageItems = all.Skip(_pageIndex * per).Take(per).ToList();
-
             DisplayItems.Clear();
             foreach (var it in pageItems) DisplayItems.Add(it);
-            // two add slots
             DisplayItems.Add(new DockItem { Title = "+ Add", AddSlot = true });
             DisplayItems.Add(new DockItem { Title = "+ Add", AddSlot = true });
-
             RebuildPageDots(pages);
         }
 
@@ -172,9 +135,9 @@ namespace DockTop
         {
             if (PART_PageDots == null) return;
             PART_PageDots.Children.Clear();
-            for (int i = 0; i < pages; i++)
-            {
-                var b = new Button { Content = (i == _pageIndex ? "●" : "○"), Margin = new Thickness(3, 0, 3, 0), Padding = new Thickness(0) };
+            for (int i = 0; i < pages; i++) {
+                var b = new Button { Content = (i == _pageIndex ? "●" : "○"),
+                    Margin = new Thickness(3, 0, 3, 0), Padding = new Thickness(0) };
                 int idx = i;
                 b.Click += (_, __) => { _pageIndex = idx; BuildItems(); };
                 PART_PageDots.Children.Add(b);
@@ -188,65 +151,39 @@ namespace DockTop
             int pages = Math.Max(1, (int)Math.Ceiling(total / (double)per));
             if (pages <= 1) return;
             _pageIndex = Math.Clamp(_pageIndex + (e.Delta < 0 ? 1 : -1), 0, pages - 1);
-            BuildItems();
-            e.Handled = true;
+            BuildItems(); e.Handled = true;
         }
 
-        // ===== buttons =====
         private void BtnSettings_Click(object sender, RoutedEventArgs e)
         {
-            var w = new SettingsWindow { Owner = this };
-            w.ShowDialog();
-
-            Topmost = Settings.Current.Topmost;
-            Height = DockHeight;
+            var w = new SettingsWindow { Owner = this }; w.ShowDialog();
+            Topmost = Settings.Current.Topmost; Height = DockHeight;
             if (Settings.Current.AutoHide && !_hidden) HideDock();
         }
 
-        private void BtnSearch_Click(object sender, RoutedEventArgs e)
-        {
-            // placeholder for quick search
-            BtnSettings_Click(sender, e);
-        }
-
+        private void BtnSearch_Click(object sender, RoutedEventArgs e) { BtnSettings_Click(sender, e); }
         private void BtnClose_Click(object sender, RoutedEventArgs e) => Close();
 
         private void DockItem_Click(object sender, RoutedEventArgs e)
         {
-            if ((sender as Button)?.DataContext is DockItem it)
-            {
+            if ((sender as Button)?.DataContext is DockItem it) {
                 if (it.AddSlot) { AddAppViaDialog(); return; }
-                try
-                {
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(it.Path) { UseShellExecute = true });
-                }
-                catch { }
+                try { System.Diagnostics.Process.Start(
+                        new System.Diagnostics.ProcessStartInfo(it.Path) { UseShellExecute = true }); } catch {}
             }
         }
 
         public void AddAppViaDialog()
         {
-            var dlg = new Microsoft.Win32.OpenFileDialog
-            {
-                Title = "Choose app (.exe or .lnk)",
-                Filter = "Apps|*.exe;*.lnk|All|*.*"
-            };
-            if (dlg.ShowDialog(this) == true)
-            {
-                Items.AddFromPath(dlg.FileName);
-                Items.Save();
-                BuildItems();
-            }
+            var dlg = new Microsoft.Win32.OpenFileDialog { Title = "Choose app (.exe or .lnk)",
+                Filter = "Apps|*.exe;*.lnk|All|*.*" };
+            if (dlg.ShowDialog(this) == true) { Items.AddFromPath(dlg.FileName); Items.Save(); BuildItems(); }
         }
 
-        // ===== interop for cursor =====
         [DllImport("user32.dll")] static extern bool GetCursorPos(out POINT lpPoint);
         public struct POINT { public int X; public int Y; public int x => X; public int y => Y; }
 
         protected override void OnClosed(EventArgs e)
-        {
-            try { _hotkeys?.Dispose(); } catch { }
-            base.OnClosed(e);
-        }
+        { try { _hotkeys?.Dispose(); } catch {} base.OnClosed(e); }
     }
 }
