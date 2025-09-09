@@ -21,51 +21,84 @@
             BorderBrush="{DynamicResource DockRing}"
             BorderThickness="1.2">
       <Border.Effect>
-        <DropShadowEffect BlurRadius="32" ShadowDepth="0"
+        <DropShadowEffect BlurRadius="32"
+                          ShadowDepth="0"
                           Opacity="{Binding Settings.Current.GlowOpacity}"
                           Color="#AAFFFFFF"/>
       </Border.Effect>
 
       <DockPanel LastChildFill="True" Margin="6">
+        <!-- Top/bottom strip for page dots -->
+        <StackPanel x:Name="PART_PageDots"
+                    DockPanel.Dock="Bottom"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Margin="0,6,0,0" />
+
         <!-- Left -->
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center">
-          <Button x:Name="BtnSettings" Content="⚙" Width="28" Height="28" Margin="0,0,6,0"
-                  Click="BtnSettings_Click" ToolTip="Settings"/>
+        <StackPanel Orientation="Horizontal"
+                    DockPanel.Dock="Left"
+                    VerticalAlignment="Center">
+          <Button x:Name="BtnSettings"
+                  Content="⚙"
+                  Width="28" Height="28" Margin="0,0,6,0"
+                  Click="BtnSettings_Click"
+                  ToolTip="Settings"/>
+        </StackPanel>
+
+        <!-- Right -->
+        <StackPanel Orientation="Horizontal"
+                    DockPanel.Dock="Right"
+                    VerticalAlignment="Center">
+          <ctrls:NowPlayingTile Width="200" Height="32" Margin="0,0,6,0"/>
+          <Button x:Name="BtnSearch"
+                  Content="⌕"
+                  Width="28" Height="28" Margin="0,0,6,0"
+                  Click="BtnSearch_Click"
+                  ToolTip="Quick Search (Ctrl+K)"/>
+          <Button x:Name="BtnClose"
+                  Content="×"
+                  Width="28" Height="28"
+                  Click="BtnClose_Click"
+                  ToolTip="Close"/>
         </StackPanel>
 
         <!-- Center: items -->
-        <ListBox x:Name="TileList" AllowDrop="True" SelectionMode="Single" x:Name="ItemsHost" ItemsSource="{Binding DisplayItems}" Margin="8,2">
-          <ListBox x:Name="TileList" AllowDrop="True" SelectionMode="Single".ItemsPanel>
+        <ListBox x:Name="TileList"
+                 AllowDrop="True"
+                 SelectionMode="Single"
+                 ItemsSource="{Binding DisplayItems}"
+                 Margin="8,2"
+                 Background="Transparent"
+                 BorderThickness="0">
+          <ListBox.ItemsPanel>
             <ItemsPanelTemplate>
               <StackPanel Orientation="Horizontal"/>
             </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
-          <ListBox x:Name="TileList" AllowDrop="True" SelectionMode="Single".ItemTemplate>
+          </ListBox.ItemsPanel>
+
+          <ListBox.ItemTemplate>
             <DataTemplate>
-              <Button Click="DockItem_Click" Padding="8" Margin="4,0,4,0" MinWidth="64"
-                      HorizontalAlignment="Center" VerticalAlignment="Center">
+              <Button Click="DockItem_Click"
+                      Padding="8"
+                      Margin="4,0,4,0"
+                      MinWidth="64"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      Background="{x:Null}"
+                      BorderThickness="0">
                 <StackPanel>
-                  <TextBlock Text="{Binding Title}" HorizontalAlignment="Center"
+                  <!-- icon placeholder: bind when you wire the converter -->
+                  <Image Width="24" Height="24" Margin="0,2,0,2"/>
+                  <TextBlock Text="{Binding Title}"
+                             HorizontalAlignment="Center"
                              TextTrimming="CharacterEllipsis"/>
                 </StackPanel>
               </Button>
             </DataTemplate>
-          </ItemsControl.ItemTemplate>
+          </ListBox.ItemTemplate>
         </ListBox>
-
-        <!-- Right -->
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
-          <ctrls:NowPlayingTile Width="200" Height="32" Margin="0,0,6,0"/>
-          <Button x:Name="BtnSearch" Content="⌕" Width="28" Height="28" Margin="0,0,6,0"
-                  Click="BtnSearch_Click" ToolTip="Quick Search (Ctrl+K)"/>
-          <Button x:Name="BtnClose" Content="×" Width="28" Height="28"
-                  Click="BtnClose_Click" ToolTip="Close"/>
-        </StackPanel>
-      
-  <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0" x:Name="PART_PageDots">
-      <!-- dots added in code-behind -->
-  </StackPanel>
-</DockPanel>
+      </DockPanel>
     </Border>
   </Grid>
 </Window>
