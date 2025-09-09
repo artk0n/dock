@@ -38,6 +38,8 @@ namespace DockTop
         }
 
         private bool _hidden;
+        private GlobalHotkeys? _hotkeys;
+        private int _hkToggleId, _hkSearchId;
         private DispatcherTimer? _edgeTimer;
 
         // Hotkeys
@@ -112,12 +114,33 @@ Topmost = Settings.Current.Topmost;
             return IntPtr.Zero;
         }
 
-        private void BuildItems()
+        private 
+        void BuildItems()
         {
+            // auto-calc per page if not set (>0 uses explicit)
+            int per = Settings.Current.TilesPerPage;
+            if (per <= 0)
+            {
+                // estimate based on window width and tile cell ~88px
+                double w = this.ActualWidth > 0 ? this.ActualWidth : SystemParameters.PrimaryScreenWidth;
+                per = System.Math.Max(6, (int)System.Math.Floor((w - 80) / 88.0));
+            }
+
+            var all = new System.Collections.Generic.List<DockItem>(Items.All.Where(i => !i.Disabled));
+            int total = all.Count;
+            int pages = System.Math.Max(1, (int)System.Math.Ceiling(total / (double)per));
+            _pageIndex = System.Math.Clamp(_pageIndex, 0, pages - 1);
+
+            var pageItems = all.Skip(_pageIndex * per).Take(per).ToList();
+
             DisplayItems.Clear();
-            foreach (var it in Items.Items)
-                if (!it.Disabled) DisplayItems.Add(it);
+            foreach (var it in pageItems) DisplayItems.Add(it);
+
+            // two add slots
             DisplayItems.Add(new DockItem { Title = "+ Add", AddSlot = true });
+            DisplayItems.Add(new DockItem { Title = "+ Add", AddSlot = true });
+        }
+    );
             DisplayItems.Add(new DockItem { Title = "+ Add", AddSlot = true });
         }
 
@@ -344,3 +367,41 @@ private void RebuildPageDots()
         }
     } catch {}
 }
+
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            // Monitor ID
+            try { Settings.Current.Profile.ScreenId = MonitorHelper.GetPrimaryId(); } catch {}
+
+            // Hotkeys
+            try
+            {
+                _hotkeys = new GlobalHotkeys(this);
+                _hkToggleId = _hotkeys.Bind(Settings.Current.HotkeyToggle ?? "Ctrl+Alt+D", ToggleDock);
+                _hkSearchId = _hotkeys.Bind(Settings.Current.HotkeySearch ?? "Ctrl+K", () => { try { BtnSettings_Click(this, new RoutedEventArgs()); } catch {} });
+            } catch {}
+        }
+    
+
+        private void OnMouseWheelScroll(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            int per = System.Math.Max(1, Settings.Current.TilesPerPage);
+            int total = Items.All.Count;
+            int pages = System.Math.Max(1, (int)System.Math.Ceiling(total / (double)per));
+            if (pages <= 1) return;
+            _pageIndex = System.Math.Clamp(_pageIndex + (e.Delta < 0 ? 1 : -1), 0, pages - 1);
+            BuildItems();
+            RebuildPageDots();
+            e.Handled = true;
+        }
+    
+        protected override void OnClosed(EventArgs e)
+        {
+            try
+            {
+                _hotkeys?.Dispose();
+            } catch {}
+            base.OnClosed(e);
+        }
+    
