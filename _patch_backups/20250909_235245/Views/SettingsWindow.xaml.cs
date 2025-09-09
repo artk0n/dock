@@ -30,15 +30,6 @@ namespace DockTop
             _svc.Current.Backdrop = (CmbBackdrop.SelectedIndex==1) ? "Acrylic" : "Mica";
             _svc.Current.CornerRadius = (int)SldRadius.Value;
             _svc.Current.GlowOpacity = SldGlow.Value;
-            _svc.Current.DockEdge = (CmbEdge.SelectedIndex==0?"Top":(CmbEdge.SelectedIndex==1?"Bottom":(CmbEdge.SelectedIndex==2?"Left":"Right")));
-            _svc.Current.ThicknessHorizontal = (int)SldThH.Value;
-            _svc.Current.ThicknessVertical = (int)SldThV.Value;
-            if (int.TryParse(TxtAnimIn.Text, out var ain)) _svc.Current.RevealAnimationMs = ain;
-            if (int.TryParse(TxtAnimOut.Text, out var aout)) _svc.Current.HideAnimationMs = aout;
-            _svc.Current.ClickThroughWhenHidden = ChkClickThrough.IsChecked==true;
-            _svc.Current.AutoStartWithWindows = ChkAutoStart.IsChecked==true;
-            _svc.Current.HotkeyToggle = TxtHotToggle.Text;
-            _svc.Current.HotkeySearch = TxtHotSearch.Text;
             _svc.Current.IconSize = CmbIcon.SelectedIndex==0 ? 24 : (CmbIcon.SelectedIndex==2 ? 50 : 32);
             _svc.Current.Topmost = ChkTop.IsChecked==true;
             _svc.Current.AutoHide = ChkAuto.IsChecked==true;

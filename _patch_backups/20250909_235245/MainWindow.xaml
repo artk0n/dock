@@ -34,13 +34,13 @@
         </StackPanel>
 
         <!-- Center: items -->
-        <ListBox x:Name="TileList" AllowDrop="True" SelectionMode="Single" x:Name="ItemsHost" ItemsSource="{Binding DisplayItems}" Margin="8,2">
-          <ListBox x:Name="TileList" AllowDrop="True" SelectionMode="Single".ItemsPanel>
+        <ItemsControl x:Name="ItemsHost" ItemsSource="{Binding DisplayItems}" Margin="8,2">
+          <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
               <StackPanel Orientation="Horizontal"/>
             </ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
-          <ListBox x:Name="TileList" AllowDrop="True" SelectionMode="Single".ItemTemplate>
+          <ItemsControl.ItemTemplate>
             <DataTemplate>
               <Button Click="DockItem_Click" Padding="8" Margin="4,0,4,0" MinWidth="64"
                       HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -51,7 +51,7 @@
               </Button>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
-        </ListBox>
+        </ItemsControl>
 
         <!-- Right -->
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
@@ -61,11 +61,7 @@
           <Button x:Name="BtnClose" Content="×" Width="28" Height="28"
                   Click="BtnClose_Click" ToolTip="Close"/>
         </StackPanel>
-      
-  <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0" x:Name="PART_PageDots">
-      <!-- dots added in code-behind -->
-  </StackPanel>
-</DockPanel>
+      </DockPanel>
     </Border>
   </Grid>
 </Window>

@@ -59,12 +59,6 @@ namespace DockTop
             DataContext = this;
             InitializeComponent();
 
-            // Hook drag events for reordering
-            TileList.PreviewMouseLeftButtonDown += OnTileMouseDown;
-            TileList.MouseMove += OnTileMouseMove;
-            TileList.Drop += OnTileDrop;
-            TileList.DragOver += (s,e)=> e.Effects = System.Windows.DragDropEffects.Move;
-
 
             if (Settings.Current.AutoHide)
             {
@@ -78,7 +72,6 @@ namespace DockTop
             }
 
             BuildItems();
-            RebuildPageDots();
 Topmost = Settings.Current.Topmost;
             DwmBackdrop.Apply(this, Settings.Current.Backdrop);
         }
@@ -126,33 +119,35 @@ Topmost = Settings.Current.Topmost;
         private void HideDock()
         {
             _hidden = true;
-            if (Settings.Current.ClickThroughWhenHidden) DockTop.Utils.WindowStyles.SetClickThrough(this, true);
             var edge = Settings.Current.DockEdge;
             var sw = SystemParameters.PrimaryScreenWidth;
             var sh = SystemParameters.PrimaryScreenHeight;
-            var peek = System.Math.Max(0, Settings.Current.AutoHidePeekPx);
-            if (edge == "Top") { Left = 0; Width = sw; AnimateTo(Window.TopProperty, -(Height - peek), Settings.Current.HideAnimationMs); }
-            else if (edge == "Bottom") { Left = 0; Width = sw; AnimateTo(Window.TopProperty, sh - peek, Settings.Current.HideAnimationMs); }
-            else if (edge == "Left") { Top = 0; Height = sh; AnimateTo(Window.LeftProperty, -(Width - peek), Settings.Current.HideAnimationMs); }
-            else { Top = 0; Height = sh; AnimateTo(Window.LeftProperty, sw - peek, Settings.Current.HideAnimationMs); }
-            AnimateTo(Window.OpacityProperty, 0.001, Settings.Current.HideAnimationMs);
-        }
+            var peek = Math.Max(0, Settings.Current.AutoHidePeekPx);
+            switch (edge)
+            {
+                case "Top": Top = -(Height - peek); Left = 0; Width = sw; break;
+                case "Bottom": Top = sh - peek; Left = 0; Width = sw; break;
+                case "Left": Left = -(Width - peek); Top = 0; Height = sh; break;
+                case "Right": Left = sw - peek; Top = 0; Height = sh; break;
+                default: Top = -(Height - peek); Left = 0; break;
+            }
         }
         }
 
         private void ShowDock()
         {
             _hidden = false;
-            DockTop.Utils.WindowStyles.SetClickThrough(this, false);
             var edge = Settings.Current.DockEdge;
             var sw = SystemParameters.PrimaryScreenWidth;
             var sh = SystemParameters.PrimaryScreenHeight;
-            if (edge == "Top") { Left = 0; Width = sw; AnimateTo(Window.TopProperty, 0, Settings.Current.RevealAnimationMs); }
-            else if (edge == "Bottom") { Left = 0; Width = sw; AnimateTo(Window.TopProperty, sh - Height, Settings.Current.RevealAnimationMs); }
-            else if (edge == "Left") { Top = 0; Height = sh; AnimateTo(Window.LeftProperty, 0, Settings.Current.RevealAnimationMs); }
-            else { Top = 0; Height = sh; AnimateTo(Window.LeftProperty, sw - Width, Settings.Current.RevealAnimationMs); }
-            AnimateTo(Window.OpacityProperty, 0.98, Settings.Current.RevealAnimationMs);
-        }
+            switch (edge)
+            {
+                case "Top": Top = 0; Left = 0; Width = sw; break;
+                case "Bottom": Top = sh - Height; Left = 0; Width = sw; break;
+                case "Left": Left = 0; Top = 0; Height = sh; break;
+                case "Right": Left = sw - Width; Top = 0; Height = sh; break;
+                default: Top = 0; Left = 0; break;
+            }
         }
         }
 
@@ -187,7 +182,6 @@ Topmost = Settings.Current.Topmost;
                 Items.Items.Add(item);
                 Items.Save();
                 BuildItems();
-            RebuildPageDots();
             }
         }
 
@@ -221,20 +215,14 @@ Topmost = Settings.Current.Topmost;
 
         private void ApplyEdgeLayout()
         {
+            // Thickness: for vertical edges, use DockHeight as width to keep consistent 'thickness'
             var sw = SystemParameters.PrimaryScreenWidth;
             var sh = SystemParameters.PrimaryScreenHeight;
             if (Settings.Current.DockEdge == "Left" || Settings.Current.DockEdge == "Right")
             {
-                Width = System.Math.Max(44, Settings.Current.ThicknessVertical);
+                Width = DockHeight; // thickness
                 Height = sh;
             }
-            else
-            {
-                Width = sw;
-                Height = System.Math.Max(44, Settings.Current.ThicknessHorizontal);
-            }
-            ShowDock();
-        }
             else
             {
                 Width = sw;
@@ -269,78 +257,4 @@ Topmost = Settings.Current.Topmost;
         }
     
     }
-}
-
-private System.Windows.Point _dragStart;
-private bool _isDragging = false;
-
-private void OnTileMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-{
-    _dragStart = e.GetPosition(null);
-    _isDragging = false;
-}
-
-private void OnTileMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
-{
-    if (e.LeftButton != System.Windows.Input.MouseButtonState.Pressed) return;
-    var pos = e.GetPosition(null);
-    if (_isDragging == false && (System.Math.Abs(pos.X - _dragStart.X) > 5 || System.Math.Abs(pos.Y - _dragStart.Y) > 5))
-    {
-        _isDragging = true;
-        if (TileList.SelectedItem != null)
-            System.Windows.DragDrop.DoDragDrop(TileList, TileList.SelectedItem, System.Windows.DragDropEffects.Move);
-    }
-}
-
-private void OnTileDrop(object sender, System.Windows.DragEventArgs e)
-{
-    var data = e.Data.GetData(typeof(DockItem)) as DockItem;
-    var target = (e.OriginalSource as FrameworkElement)?.DataContext as DockItem;
-    if (data == null || target == null || data == target) return;
-
-    var list = new System.Collections.Generic.List<DockItem>(Items.All);
-    int oldIndex = list.IndexOf(data);
-    int newIndex = list.IndexOf(target);
-    if (oldIndex >= 0 && newIndex >= 0)
-    {
-        list.RemoveAt(oldIndex);
-        list.Insert(newIndex, data);
-        Items.ReplaceAll(list);
-        Items.Save();
-        BuildItems();
-            RebuildPageDots();
-    }
-}
-
-
-private void AnimateTo(DependencyProperty prop, double to, int ms)
-{
-    var anim = new System.Windows.Media.Animation.DoubleAnimation
-    {
-        To = to,
-        Duration = new System.Windows.Duration(System.TimeSpan.FromMilliseconds(ms)),
-        EasingFunction = new System.Windows.Media.Animation.CubicEase { EasingMode = System.Windows.Media.Animation.EasingMode.EaseOut }
-    };
-    this.BeginAnimation(prop, anim);
-}
-
-
-private int _pageIndex = 0;
-private void RebuildPageDots()
-{
-    try
-    {
-        if (Items == null || PART_PageDots == null) return;
-        int per = System.Math.Max(1, Settings.Current.TilesPerPage);
-        int total = Items.All.Count;
-        int pages = System.Math.Max(1, (int)System.Math.Ceiling(total / (double)per));
-        PART_PageDots.Children.Clear();
-        for (int i=0;i<pages;i++)
-        {
-            var b = new System.Windows.Controls.Button { Content = (i==_pageIndex?"●":"○"), Margin = new System.Windows.Thickness(3,0,3,0), Padding = new System.Windows.Thickness(0) };
-            int idx = i;
-            b.Click += (_, __) => { _pageIndex = idx; BuildItems(); RebuildPageDots(); };
-            PART_PageDots.Children.Add(b);
-        }
-    } catch {}
 }

@@ -10,16 +10,6 @@ namespace DockTop.Models
         public string AccentHex { get; set; } = "#B81F1120"; // hsla(297,30%,9.6%,0.72)
         public bool Topmost { get; set; } = true;
         public bool AutoHide { get; set; } = true;
-        public bool AutoStartWithWindows { get; set; } = false;
-        public MonitorProfile Profile { get; set; } = new MonitorProfile();
-        public bool ClickThroughWhenHidden { get; set; } = true;
-        public string HotkeySearch { get; set; } = "Ctrl+K";
-        public string HotkeyToggle { get; set; } = "Ctrl+Alt+D";
-        public int TilesPerPage { get; set; } = 12; // rough default; auto-computed for width
-        public int HideAnimationMs { get; set; } = 160;
-        public int RevealAnimationMs { get; set; } = 140;
-        public int ThicknessVertical { get; set; } = 76;   // px (Left/Right)
-        public int ThicknessHorizontal { get; set; } = 76; // px (Top/Bottom)
         public string DockEdge { get; set; } = "Top"; // Top|Bottom|Left|Right
         public int AutoHidePeekPx { get; set; } = 1;
         public int AutoHideShowDelayMs { get; set; } = 100;
@@ -65,13 +55,4 @@ namespace DockTop.Models
             } catch {}
         }
     }
-}
-
-
-public class MonitorProfile
-{
-    public string ScreenId { get; set; } = "Primary";
-    public string DockEdge { get; set; } = "Top";
-    public int ThicknessHorizontal { get; set; } = 76;
-    public int ThicknessVertical { get; set; } = 76;
 }

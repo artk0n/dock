@@ -1,7 +1,53 @@
---- MainWindow.xaml.cs
+diff --git a/MainWindow.xaml b/MainWindow.xaml
+index 88b3725..8464a30 100644
+--- a/MainWindow.xaml
++++ b/MainWindow.xaml
+@@ -34,13 +34,13 @@
 
-+++ MainWindow.xaml.cs
+         </StackPanel>
+ 
+         <!-- Center: items -->
+-        <ItemsControl x:Name="ItemsHost" ItemsSource="{Binding DisplayItems}" Margin="8,2">
+-          <ItemsControl.ItemsPanel>
++        <ListBox x:Name="TileList" AllowDrop="True" SelectionMode="Single" x:Name="ItemsHost" ItemsSource="{Binding DisplayItems}" Margin="8,2">
++          <ListBox x:Name="TileList" AllowDrop="True" SelectionMode="Single".ItemsPanel>
+             <ItemsPanelTemplate>
+               <StackPanel Orientation="Horizontal"/>
+             </ItemsPanelTemplate>
+           </ItemsControl.ItemsPanel>
+-          <ItemsControl.ItemTemplate>
++          <ListBox x:Name="TileList" AllowDrop="True" SelectionMode="Single".ItemTemplate>
+             <DataTemplate>
+               <Button Click="DockItem_Click" Padding="8" Margin="4,0,4,0" MinWidth="64"
+                       HorizontalAlignment="Center" VerticalAlignment="Center">
+@@ -51,7 +51,7 @@
 
+               </Button>
+             </DataTemplate>
+           </ItemsControl.ItemTemplate>
+-        </ItemsControl>
++        </ListBox>
+ 
+         <!-- Right -->
+         <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
+@@ -61,7 +61,11 @@
+
+           <Button x:Name="BtnClose" Content="×" Width="28" Height="28"
+                   Click="BtnClose_Click" ToolTip="Close"/>
+         </StackPanel>
+-      </DockPanel>
++      
++  <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0" x:Name="PART_PageDots">
++      <!-- dots added in code-behind -->
++  </StackPanel>
++</DockPanel>
+     </Border>
+   </Grid>
+ </Window>
+diff --git a/MainWindow.xaml.cs b/MainWindow.xaml.cs
+index 9dc26c1..edd1078 100644
+--- a/MainWindow.xaml.cs
++++ b/MainWindow.xaml.cs
 @@ -59,6 +59,12 @@
 
              DataContext = this;
@@ -189,10 +235,10 @@
 +        }
 +    } catch {}
 +}
---- Models/UserSettings.cs
-
-+++ Models/UserSettings.cs
-
+diff --git a/Models/UserSettings.cs b/Models/UserSettings.cs
+index 70b74a0..0ebadd8 100644
+--- a/Models/UserSettings.cs
++++ b/Models/UserSettings.cs
 @@ -10,6 +10,16 @@
 
          public string AccentHex { get; set; } = "#B81F1120"; // hsla(297,30%,9.6%,0.72)
@@ -225,10 +271,11 @@
 +    public int ThicknessHorizontal { get; set; } = 76;
 +    public int ThicknessVertical { get; set; } = 76;
 +}
---- Services/AutoStartService.cs
-
-+++ Services/AutoStartService.cs
-
+diff --git a/Services/AutoStartService.cs b/Services/AutoStartService.cs
+new file mode 100644
+index 0000000..a151dcf
+--- /dev/null
++++ b/Services/AutoStartService.cs
 @@ -0,0 +1,31 @@
 
 +
@@ -262,10 +309,11 @@
 +        }
 +    }
 +}
---- Utils/IconExtractor.cs
-
-+++ Utils/IconExtractor.cs
-
+diff --git a/Utils/IconExtractor.cs b/Utils/IconExtractor.cs
+new file mode 100644
+index 0000000..74720ba
+--- /dev/null
++++ b/Utils/IconExtractor.cs
 @@ -0,0 +1,46 @@
 
 +
@@ -314,10 +362,11 @@
 +        }
 +    }
 +}
---- Utils/WindowStyles.cs
-
-+++ Utils/WindowStyles.cs
-
+diff --git a/Utils/WindowStyles.cs b/Utils/WindowStyles.cs
+new file mode 100644
+index 0000000..403dc63
+--- /dev/null
++++ b/Utils/WindowStyles.cs
 @@ -0,0 +1,29 @@
 
 +
@@ -349,77 +398,10 @@
 +        }
 +    }
 +}
---- Views/SettingsWindow.xaml.cs
-
-+++ Views/SettingsWindow.xaml.cs
-
-@@ -30,6 +30,15 @@
-
-             _svc.Current.Backdrop = (CmbBackdrop.SelectedIndex==1) ? "Acrylic" : "Mica";
-             _svc.Current.CornerRadius = (int)SldRadius.Value;
-             _svc.Current.GlowOpacity = SldGlow.Value;
-+            _svc.Current.DockEdge = (CmbEdge.SelectedIndex==0?"Top":(CmbEdge.SelectedIndex==1?"Bottom":(CmbEdge.SelectedIndex==2?"Left":"Right")));
-+            _svc.Current.ThicknessHorizontal = (int)SldThH.Value;
-+            _svc.Current.ThicknessVertical = (int)SldThV.Value;
-+            if (int.TryParse(TxtAnimIn.Text, out var ain)) _svc.Current.RevealAnimationMs = ain;
-+            if (int.TryParse(TxtAnimOut.Text, out var aout)) _svc.Current.HideAnimationMs = aout;
-+            _svc.Current.ClickThroughWhenHidden = ChkClickThrough.IsChecked==true;
-+            _svc.Current.AutoStartWithWindows = ChkAutoStart.IsChecked==true;
-+            _svc.Current.HotkeyToggle = TxtHotToggle.Text;
-+            _svc.Current.HotkeySearch = TxtHotSearch.Text;
-             _svc.Current.IconSize = CmbIcon.SelectedIndex==0 ? 24 : (CmbIcon.SelectedIndex==2 ? 50 : 32);
-             _svc.Current.Topmost = ChkTop.IsChecked==true;
-             _svc.Current.AutoHide = ChkAuto.IsChecked==true;
---- MainWindow.xaml
-
-+++ MainWindow.xaml
-
-@@ -34,13 +34,13 @@
-
-         </StackPanel>
- 
-         <!-- Center: items -->
--        <ItemsControl x:Name="ItemsHost" ItemsSource="{Binding DisplayItems}" Margin="8,2">
--          <ItemsControl.ItemsPanel>
-+        <ListBox x:Name="TileList" AllowDrop="True" SelectionMode="Single" x:Name="ItemsHost" ItemsSource="{Binding DisplayItems}" Margin="8,2">
-+          <ListBox x:Name="TileList" AllowDrop="True" SelectionMode="Single".ItemsPanel>
-             <ItemsPanelTemplate>
-               <StackPanel Orientation="Horizontal"/>
-             </ItemsPanelTemplate>
-           </ItemsControl.ItemsPanel>
--          <ItemsControl.ItemTemplate>
-+          <ListBox x:Name="TileList" AllowDrop="True" SelectionMode="Single".ItemTemplate>
-             <DataTemplate>
-               <Button Click="DockItem_Click" Padding="8" Margin="4,0,4,0" MinWidth="64"
-                       HorizontalAlignment="Center" VerticalAlignment="Center">
-@@ -51,7 +51,7 @@
-
-               </Button>
-             </DataTemplate>
-           </ItemsControl.ItemTemplate>
--        </ItemsControl>
-+        </ListBox>
- 
-         <!-- Right -->
-         <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
-@@ -61,7 +61,11 @@
-
-           <Button x:Name="BtnClose" Content="×" Width="28" Height="28"
-                   Click="BtnClose_Click" ToolTip="Close"/>
-         </StackPanel>
--      </DockPanel>
-+      
-+  <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0" x:Name="PART_PageDots">
-+      <!-- dots added in code-behind -->
-+  </StackPanel>
-+</DockPanel>
-     </Border>
-   </Grid>
- </Window>
---- Views/SettingsWindow.xaml
-
-+++ Views/SettingsWindow.xaml
-
+diff --git a/Views/SettingsWindow.xaml b/Views/SettingsWindow.xaml
+index cca724d..930217d 100644
+--- a/Views/SettingsWindow.xaml
++++ b/Views/SettingsWindow.xaml
 @@ -40,6 +40,35 @@
 
      <ComboBoxItem Content="Right"/>
@@ -474,3 +456,24 @@
        <CheckBox x:Name="ChkClock" Content="Clock (12h)"/>
        <CheckBox x:Name="ChkNow" Content="Now Playing" IsChecked="True"/>
        <CheckBox x:Name="ChkPing" Content="Network Ping" IsChecked="True"/>
+diff --git a/Views/SettingsWindow.xaml.cs b/Views/SettingsWindow.xaml.cs
+index 3eedcb4..2b1f88c 100644
+--- a/Views/SettingsWindow.xaml.cs
++++ b/Views/SettingsWindow.xaml.cs
+@@ -30,6 +30,15 @@
+
+             _svc.Current.Backdrop = (CmbBackdrop.SelectedIndex==1) ? "Acrylic" : "Mica";
+             _svc.Current.CornerRadius = (int)SldRadius.Value;
+             _svc.Current.GlowOpacity = SldGlow.Value;
++            _svc.Current.DockEdge = (CmbEdge.SelectedIndex==0?"Top":(CmbEdge.SelectedIndex==1?"Bottom":(CmbEdge.SelectedIndex==2?"Left":"Right")));
++            _svc.Current.ThicknessHorizontal = (int)SldThH.Value;
++            _svc.Current.ThicknessVertical = (int)SldThV.Value;
++            if (int.TryParse(TxtAnimIn.Text, out var ain)) _svc.Current.RevealAnimationMs = ain;
++            if (int.TryParse(TxtAnimOut.Text, out var aout)) _svc.Current.HideAnimationMs = aout;
++            _svc.Current.ClickThroughWhenHidden = ChkClickThrough.IsChecked==true;
++            _svc.Current.AutoStartWithWindows = ChkAutoStart.IsChecked==true;
++            _svc.Current.HotkeyToggle = TxtHotToggle.Text;
++            _svc.Current.HotkeySearch = TxtHotSearch.Text;
+             _svc.Current.IconSize = CmbIcon.SelectedIndex==0 ? 24 : (CmbIcon.SelectedIndex==2 ? 50 : 32);
+             _svc.Current.Topmost = ChkTop.IsChecked==true;
+             _svc.Current.AutoHide = ChkAuto.IsChecked==true;
