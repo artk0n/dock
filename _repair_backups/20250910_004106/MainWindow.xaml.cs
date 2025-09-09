@@ -8,8 +8,6 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using DockTop.Utils;
 
-using DockTop.Controls;
-using DockTop.Models;
 namespace DockTop
 {
     public partial class MainWindow : Window
@@ -176,7 +174,7 @@ namespace DockTop
             PART_PageDots.Children.Clear();
             for (int i = 0; i < pages; i++)
             {
-                var b = new Button { Content = (i == _pageIndex ? "â—" : "â—‹"), Margin = new Thickness(3, 0, 3, 0), Padding = new Thickness(0) };
+                var b = new Button { Content = (i == _pageIndex ? "●" : "○"), Margin = new Thickness(3, 0, 3, 0), Padding = new Thickness(0) };
                 int idx = i;
                 b.Click += (_, __) => { _pageIndex = idx; BuildItems(); };
                 PART_PageDots.Children.Add(b);
@@ -252,4 +250,3 @@ namespace DockTop
         }
     }
 }
-

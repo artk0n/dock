@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
@@ -75,4 +75,17 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.1.1" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Utils\HotKeyManager.cs" />
+    <Compile Include="Utils\WindowStyles.cs" />
+    <Compile Include="Utils\IconExtractor.cs" />
+    <Compile Include="Utils\MonitorHelper.cs" />
+    <Compile Include="Models\DockData.cs" />
+  </ItemGroup>
 </Project>
+
