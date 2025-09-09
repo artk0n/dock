@@ -1,0 +1,12 @@
+<UserControl x:Class="DockTop.Controls.FolderDockItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Height="48" MinWidth="100">
+  <Border CornerRadius="10" Background="#0EFFFFFF" Padding="8">
+    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+      <!-- If you have an icon path on your item, this will just work; otherwise it shows title only -->
+      <Image Width="24" Height="24" Source="{Binding IconPath}" Margin="0,0,6,0"/>
+      <TextBlock Text="{Binding Title}" VerticalAlignment="Center" />
+    </StackPanel>
+  </Border>
+</UserControl>

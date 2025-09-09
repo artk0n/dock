@@ -1,0 +1,28 @@
+[
+  {
+    "Id": "pastel-cloud",
+    "Name": "Pastel Cloud",
+    "GradientStart": "#E6F3FEFF",
+    "GradientEnd": "#F7E9FFFF",
+    "Accent": "#B38CF5",
+    "BlurStrength": 10,
+    "GlowIntensity": 0.9,
+    "Surface": "#14FFFFFF",
+    "SurfaceAlt": "#0FFFFFFF",
+    "Border": "#22FFFFFF",
+    "Shadow": "#22000000"
+  },
+  {
+    "Id": "neo-noir-glass",
+    "Name": "Neo Noir Glass",
+    "GradientStart": "#CC0E0E10",
+    "GradientEnd": "#99070709",
+    "Accent": "#AE88FF",
+    "BlurStrength": 8,
+    "GlowIntensity": 0.8,
+    "Surface": "#10000000",
+    "SurfaceAlt": "#08000000",
+    "Border": "#22000000",
+    "Shadow": "#33000000"
+  }
+]

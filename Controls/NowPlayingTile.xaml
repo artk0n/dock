@@ -1,0 +1,11 @@
+<UserControl x:Class="DockTop.Controls.NowPlayingTile"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Height="32" MinWidth="140">
+  <Border CornerRadius="8" Background="#0EFFFFFF" Padding="8,4" ToolTip="Now Playing">
+    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+      <TextBlock Text="♪" Margin="0,0,6,0" VerticalAlignment="Center"/>
+      <TextBlock x:Name="Txt" Text="Not playing" Opacity="0.9"/>
+    </StackPanel>
+  </Border>
+</UserControl>

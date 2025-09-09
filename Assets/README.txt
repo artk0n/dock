@@ -1,0 +1,1 @@
+This folder contains placeholder icons (browser.png, code.png, etc.). Replace as needed.

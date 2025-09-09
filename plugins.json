@@ -1,0 +1,10 @@
+{
+  "Buttons": [
+    {
+      "Title": "Web Tools",
+      "Command": "msedge.exe",
+      "Arguments": "https://www.example.com/tools",
+      "AppColor": "#9C6FFF"
+    }
+  ]
+}

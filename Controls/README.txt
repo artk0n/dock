@@ -1,0 +1,1 @@
+This folder should contain all Controls/*.xaml and *.xaml.cs from DockTop Pro.
